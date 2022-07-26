@@ -1,0 +1,185 @@
+﻿@using ChangeRequestManagment.Models.ViewModels.Company
+
+@{
+    ViewData["Title"] = "Add";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@model ChangeRequestManagment.Models.Client.AddClientViewModel
+
+<style>
+    /* Chrome, Safari, Edge, Opera */
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    /* Firefox */
+    input[type=number] {
+        -moz-appearance: textfield;
+    }
+</style>
+<!-- left column -->
+<div class="col-md-12">
+    <!-- general form elements -->
+    <div class="card card-primary">
+        <div class="card-header">
+            <h4>Add Client</h4>
+        </div>
+        <!-- /.card-header -->
+        @{
+            if (ViewData.ModelState.IsValid == false)
+            {
+                <div class="callout callout-danger">
+                    <div asp-validation-summary="All" class="text-danger"></div>
+                </div>
+
+            }
+        }
+        <!-- form start -->
+        @Html.AntiForgeryToken()
+        <form id="addclientform" asp-action="AddClient" asp-controller="Client">
+            <div class="card-body">
+                <div class="form-group">
+                    <label asp-for="FirstName">First Name*</label>
+                    <input required class="form-control" asp-for="FirstName" placeholder="First Name" autofocus autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label asp-for="LastName">Last Name*</label>
+                    <input required class="form-control" asp-for="LastName" placeholder="Last Name" autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label asp-for="Address">Address</label>
+                    <input class="form-control" asp-for="Address" placeholder="Address" autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label asp-for="PhoneNumber">Phone Number*</label>
+                    <input id="ph" required class="form-control" asp-for="PhoneNumber" type="tel" placeholder="Phone Number" min="1" maxlength="10" autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label asp-for="EmailAddress">Email address*</label>
+                    <input class="form-control" asp-for="EmailAddress" placeholder="Email Address"  autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label asp-for="CompanyId">Select a Company</label>
+                    <select class="form-select form-select-lg mb-12" style="width: 100%;padding: 8px;border-radius: 4px;" asp-for="CompanyId">
+                        <option value="0">--Select--</option>
+                        @foreach (var item in ViewData["CompanyInfoFromClient"] as IEnumerable<CompanyViewModel>)
+                        {
+                            <option value="@item.CompanyId">@item.CompanyName</option>
+                        }
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Password">Password*</label>
+                    <input class="form-control" asp-for="Password" placeholder="Password">
+                </div>
+                <div class="form-group">
+                    <label asp-for="ConfirmPassword">Confirm Password*</label>
+                    <input required class="form-control" asp-for="ConfirmPassword" placeholder="Confirm Password">
+                </div>
+                </>
+                <!-- /.card-body -->
+            </div>
+            <div class="card-footer">
+                <button type="submit" class="btn btn-primary mybtn-position">Submit</button> &nbsp;
+                <button type="reset" class="btn btn-secondary mybtn-position set-pos" onclick ="cancel();">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+<!-- /.card -->
+
+@section Scripts
+            {
+    <script>
+        $('#ph').bind({
+            keydown: function (e) {
+                if (e.shiftKey === true) {
+                    if (e.which == 9) {
+                        return true;
+                    }
+                    return false;
+                }
+                if (e.which > 57) {
+                    return false;
+                }
+                if (e.which == 32) {
+                    return false;
+                }
+                return true;
+            }
+        });
+
+        $(function () {
+            $('#addclientform').validate({
+                rules: {
+                    FirstName:
+                    {
+                        required: true
+                    },
+                    LastName:
+                    {
+                        required: true
+                    },
+                    EmailAddress: {
+                        required: true,
+                        email: true,
+                    },
+                    Password: {
+                        required: true
+
+                    },
+                },
+                messages: {
+                    FirstName: {
+                        required: "First Name cannot be empty"
+                    },
+                    LastName: {
+                        required: "Last Name cannot be empty"
+                    },
+                    EmailAddress: {
+                        required: "Email is required",
+                        email: "Email is invalid"
+                    },
+                    Password: {
+                        required: "Password is required"
+                    }
+                },
+                errorElement: 'span',
+                errorPlacement: function (error, element) {
+                    error.addClass('invalid-feedback');
+                    element.closest('.form-group').append(error);
+                },
+                highlight: function (element, errorClass, validClass) {
+                    $(element).addClass('is-invalid');
+                },
+                unhighlight: function (element, errorClass, validClass) {
+                    $(element).removeClass('is-invalid');
+                }
+            });
+        });
+
+        function cancel()
+        {
+            window.location = "/Client/Index";
+        }
+
+    </script>
+
+}
+
+
+<style>
+    .validation-summary-errors ul {
+        list-style: none;
+    }
+
+    .mybtn-position
+    {
+        float:right;
+    }
+
+    .set-pos{margin-right:1vh;}
+</style>

@@ -1,0 +1,135 @@
+﻿@{
+    ViewData["Title"] = "Index";
+}
+﻿
+<br />
+<div class="card card-primary">
+    <div class="card-header">
+        <h4>Company List</h4>
+    </div>
+    <div class="card-body" style="background: #363639a8;border-radius: 6px;">
+        <div style="Margin-bottom:16px;">
+            <a asp-action="AddCompany" asp-controller="Company" class="btn btn-primary btn-lg text-white" role="button">
+                Add
+            </a>
+        </div>
+        <table id="companyDatatable" class="table table-striped table-bordered" style="width:100%">
+            <thead>
+                <tr>
+                    <th>Company Name</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<style>
+
+    .my-btn {
+        outline: none;
+        border: none;
+        margin: 4px 4px;
+        padding: 5px 18px;
+        border-radius: 3px;
+    }
+
+    .btn-delete {
+        background: #d72b2bd9;
+    }
+
+        .btn-delete:hover {
+            background-color: #ea2020;
+        }
+
+    .btn-update {
+        background: #31b93191;
+    }
+
+        .btn-update:hover {
+            background-color: #2eb02e;
+        }
+</style>
+
+@section Scripts{
+    <!-- DataTables  & Plugins -->
+    <script src="~/theme/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/theme/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/theme/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="~/theme/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+    <script src="~/theme/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+    <script src="~/theme/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+    <script src="~/theme/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+    <script>
+        var dataTable;
+        $(document).ready(function () {
+            loadDataTable();
+        });
+
+        function loadDataTable() {
+            dataTable = $("#companyDatatable").DataTable({
+                "responsive": true,
+                "autoWidth": true,
+                "processing": false,
+                "serverSide": false,
+                "ajax": {
+                    "url": "@Url.Action("GetAllCompany")",
+                    "type": "GET",
+                    "datatype": "json"
+                },
+                columnDefs: [
+                    { orderable: false, targets: -1 }
+                ],
+                "columns": [
+                    { "data": "companyName", "name": "CompanyName", "autoWidth": true },
+                    {
+                        "data": "companyId", render : function ( data, type, row, meta ) {
+                        return type === 'display'  ?
+                            '<a title="Update Company" class="my-btn btn-update" href="/Company/UpdateCompany/'+data+'" ><i class="fas fa-pen-nib text-white"></i></a>'+
+                            '<a id ="delete-link-'+data+'" company-name="'+row.companyName+'" style="cursor:pointer;" title="Delete Company" onclick=DeleteCompany("'+data+'") class="my-btn btn-delete"><i class="fas fa-trash-alt text-white"></i></a>' :
+                            data;
+                          }
+                    }
+                ],
+                "language": {
+                    "emptyTable": "no data found"
+                },
+                "autoWidth": true
+            });
+        }
+     
+        function DeleteCompany(data) {
+            var companyName = document.getElementById('delete-link-'+data).getAttribute('company-name');
+            new swal({
+                title: "Are you sure you want to delete "+companyName+"?",
+                text: "Once deleted, you will not be able to recover",
+                icon: "warning",
+                position: "bottom-end",
+                buttons: true,
+                dangerMode: true
+            }).then((willDelete) => {
+                if (willDelete) {
+                    $.ajax({
+                        type: "DELETE",
+                        url: "/Company/DeleteCompany/"+data,
+                        success: function (data) {
+                            if (data.success) {
+                                toastSuccess("Success: "+companyName+" is successfully deleted.");
+                                dataTable.ajax.reload();
+                            }
+                            else
+                            {
+                                toastError("Error: "+companyName+" could not be deleted because, it is associated with project or client . Delete that first..");
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
+    </script>
+}

@@ -1,0 +1,52 @@
+﻿@model ChangeRequestManagment.Models.ViewModels.Company.CompanyViewModel
+
+@{ 
+    ViewData["Title"] = "Update";
+}
+<!-- left column -->
+<div class="col-md-12">
+    <!-- general form elements -->
+    <div class="card card-primary">
+        <div class="card-header">
+            <h4>Update Company</h4>
+        </div>
+        <!-- /.card-header -->
+        @{
+            if (ViewData.ModelState.IsValid == false)
+            {
+                <div class="callout callout-danger">
+                    <div asp-validation-summary="All" class="text-danger"></div>
+                </div>
+
+            }
+        }
+        <!-- form start -->
+        @Html.AntiForgeryToken()
+        <form id="addclientform" asp-action="UpdateCompany" asp-controller="Company">
+            <div class="card-body">
+                <div class="form-group">
+                    <input type="hidden" asp-for="CompanyId" />
+                    <label asp-for="CompanyName">Company Name*</label>
+                    <input required class="form-control" asp-for="CompanyName" placeholder="Company Name" autofocus autocomplete="off">
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <div class="card-footer">
+                <button type="submit" class="btn btn-primary mybtn-position">Update</button> &nbsp;
+                <button type="reset" class="btn btn-secondary mybtn-position set-pos" onclick ="window.location ='/Company/Index'">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .mybtn-position
+    {
+        float:right;
+    }
+
+    .set-pos{margin-right:1vh;}
+</style>
+@section Scripts{
+    <partial name="_ValidationScriptsPartial" />
+}

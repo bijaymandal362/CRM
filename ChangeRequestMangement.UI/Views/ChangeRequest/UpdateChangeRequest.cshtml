@@ -1,0 +1,244 @@
+﻿@model ChangeRequestManagment.Models.ViewModels.ChangeRequest.Common.UpdateChangeRequestInfoCommonViewModel
+
+@{
+    ViewData["Title"] = "Update Change Request";
+}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<link rel="stylesheet" type="text/css" href="https://npmcdn.com/flatpickr/dist/themes/dark.css">
+
+<div class="card card-primary">
+    <div class="card-header">
+        <h4>Update Change Request</h4>
+    </div>
+    @{
+            if (ViewData.ModelState.IsValid == false)
+            {
+                <div class="callout callout-danger">
+                    <div asp-validation-summary="All" class="text-danger"></div>
+                </div>
+
+            }
+        }
+    <form method="post" enctype="multipart/form-data" asp-controller="ChangeRequest" asp-action="UpdateChangeRequest">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="UpdateChangeRequestInfoViewModel.ChangeRequestNumber" />
+        <input type="hidden" asp-for="UpdateChangeRequestInfoViewModel.InsertPersonId" />
+        <input type="hidden" asp-for="UpdateChangeRequestInfoViewModel.InsertDate">
+        <input type="hidden" asp-for="UpdateChangeRequestInfoViewModel.UpdatePersonId" />
+        <input type="hidden" asp-for="UpdateChangeRequestInfoViewModel.UpdateDate" />
+        <input type="hidden" asp-for="UpdateChangeRequestInfoViewModel.ChangeRequestId" />
+        <input type="hidden" asp-for="UpdateChangeRequestInfoViewModel.ClientId" />
+        <div class="card-body">
+            <fieldset class="border my-border border-primary p-2">
+                <legend class="w-auto">Module Selection</legend>
+                <div class="form-group">
+                    <label>Project</label>
+                    <select required id="project-dropdown" onchange="ModuleSelector(this.value);" class="form-select form-select-lg mb-12" style="width: 100%;padding: 8px;border-radius: 4px;">
+                        <option value="0">--Select Project--</option>
+                        @foreach (var item in ViewData["Projects"] as List<ProjectViewModel>)
+                        {
+                            <option value="@item.ProjectId">@item.ProjectName</option>
+                        }
+                    </select>
+                </div>
+                <div class="form-group" style="display:none;">
+                    <label>Module</label>
+                    <select required id="module-id-dropdown" asp-for="UpdateChangeRequestInfoViewModel.ModuleId" onchange="SubModuleSelector(this.value);" class="form-select form-select-lg mb-12" style="width: 100%;padding: 8px;border-radius: 4px;">
+                    </select>
+                </div>
+                <div class="form-group" style="display:none;">
+                    <label>Sub Module</label>
+                    <select id="submodule-id-dropdown" asp-for="UpdateChangeRequestInfoViewModel.ModuleId" class="form-select form-select-lg mb-12" style="width: 100%;padding: 8px;border-radius: 4px;">
+                    </select>
+                </div>
+            </fieldset>
+            <fieldset class="border my-border border-primary p-2">
+                <legend class="w-auto">Change Request Type and Priority</legend>
+                <div class="form-group">
+                    <label asp-for=UpdateChangeRequestInfoViewModel.ChangeRequestTypeListItemId>Select Change Request Type*</label>
+                    <select asp-for="UpdateChangeRequestInfoViewModel.ChangeRequestTypeListItemId" class="form-select form-select-lg mb-12" style="width: 100%;padding: 8px;border-radius: 4px;">
+                        <option value="0">--Select--</option>
+                        @foreach (var item in @ViewData["ChangeRequestType"] as IEnumerable<ListItemViewModel>)
+                        {
+                            <option value="@item.ListItemId">@item.ListItemName</option>
+                        }
+                    </select>
+                    <span asp-validation-for="UpdateChangeRequestInfoViewModel.ChangeRequestTypeListItemId" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="UpdateChangeRequestInfoViewModel.PriorityListItemId">Select a Priority*</label>
+                    <select asp-for="UpdateChangeRequestInfoViewModel.PriorityListItemId" class="form-select form-select-lg mb-12" style="width: 100%;padding: 8px;border-radius: 4px;">
+                        <option value="0">--Select--</option>
+                        @foreach (var item in ViewData["ChangeRequestPriority"] as IEnumerable<ListItemViewModel>)
+                        {
+                            <option value="@item.ListItemId">@item.ListItemName</option>
+                        }
+                    </select>
+                    <span asp-validation-for="UpdateChangeRequestInfoViewModel.PriorityListItemId" class="text-danger"></span>
+                </div>
+            </fieldset>
+            <fieldset class="border my-border border-primary p-2">
+                <legend class="w-auto">Information</legend>
+                <div class="form-group">
+                    <label asp-for="UpdateChangeRequestInfoViewModel.Title">Title</label>
+                    <input asp-for="UpdateChangeRequestInfoViewModel.Title" class="form-control" placeholder="Title">
+                    <span asp-validation-for="UpdateChangeRequestInfoViewModel.Title" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="UpdateChangeRequestInfoViewModel.Description">Description</label>
+                    <textarea asp-for="UpdateChangeRequestInfoViewModel.Description" class="form-control" rows="4"></textarea>
+                    <span asp-validation-for="UpdateChangeRequestInfoViewModel.Description" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="ChangeRequestDocuments">Documents</label>
+                    <div class="custom-file">
+                        <input accept=".pdf,.doc,.docx,.csv,.xls,.xlsx,.png,.jpeg,.jpg,.png" multiple="multiple" id="upload-documents" asp-for="ChangeRequestDocuments" class="form-control custom-file-input">
+                        <label class="custom-file-label" for="customFile">Choose file</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label asp-for="UpdateChangeRequestInfoViewModel.DeadlineDate">Deadline Date*</label>
+                    <input id="datetimepicker1" asp-for="UpdateChangeRequestInfoViewModel.DeadlineDate" type="datetime" class="form-control datepicker" placeholder="DeadlineDate">
+                    <span asp-validation-for="UpdateChangeRequestInfoViewModel.DeadlineDate" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="UpdateChangeRequestInfoViewModel.Comment">Comment</label>
+                    <input asp-for="UpdateChangeRequestInfoViewModel.Comment" class="form-control" placeholder="Comment">
+                    <span asp-validation-for="UpdateChangeRequestInfoViewModel.Comment" class="text-danger"></span>
+                </div>
+            </fieldset>
+        </div>
+        <div class="card-footer">
+            <button type="submit" class="btn btn-primary mybtn-position">Update</button> &nbsp;
+            <button type="reset" class="btn btn-secondary mybtn-position set-pos">Cancel</button>
+        </div>
+    </form>
+</div>
+
+<style>
+    .validation-summary-errors ul {
+        list-style: none;
+    }
+
+    .mybtn-position {
+        float: right;
+    }
+
+    .set-pos {
+        margin-right: 1vh;
+    }
+
+    legend {
+        font-size: 1.3rem !important;
+        padding: 0px 3px;
+    }
+
+    .my-border {
+        border-top-color: #4c78a6 !important;
+        border-bottom: none !important;
+        border-bottom-width: medium;
+        border: navy;
+        border-left: none !important;
+        border-left-width: medium;
+        border-right: none !important;
+        border-right-width: medium;
+        border-width: 2px !important;
+    }
+</style>
+@section Scripts{
+    <partial name="_ValidationScriptsPartial" />
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script type="text/javascript">
+
+    var moduleId = @Model.UpdateChangeRequestInfoViewModel.ModuleId;
+
+        $(document).ready(function () {
+            $("#datetimepicker1").flatpickr({
+                enableTime: true
+            });
+            $.ajax(
+                {
+                    url:'/ChangeRequest/GetProjectIdByModuleId/'+moduleId,
+                    success: function(projectId)
+                    {
+                        var element = document.getElementById('project-dropdown');
+                        // Create a new 'change' event
+                        var event = new Event('change');
+                        element.dispatchEvent(event);
+                        setTimeout(function()
+                        {
+                            element.value = projectId;
+                            element.dispatchEvent(event);
+                            $.ajax(
+                                {
+                                    url:"/Module/CheckIfParentModuleExists/"+moduleId,
+                                    success:function(result)
+                                    {
+                                        if(result==null)
+                                        {
+                                            document.getElementById('module-id-dropdown').value = moduleId;
+                                        }
+                                        else 
+                                        {
+                                            document.getElementById('module-id-dropdown').value = result;
+                                            var moduleElement =  document.getElementById('module-id-dropdown');
+                                            moduleElement.dispatchEvent(event);
+                                            document.getElementById('submodule-id-dropdown').value = moduleId;
+                                        }
+                                    }
+                                });
+                        }, 1000); 
+                    }
+                });
+        });
+
+        $('#upload-documents').on('change', function () {
+            var fileLabel = $(this).next('.custom-file-label');
+            var files = $(this)[0].files;
+            if (files.length > 1) {
+                fileLabel.html(files.length + ' files selected');
+            }
+            else if (files.length == 1) {
+                fileLabel.html(files[0].name);
+            }
+        });
+
+        function ModuleSelector(projectId) {
+            var moduleChildList = $('#module-id-dropdown');
+            moduleChildList.empty();
+            document.getElementById('module-id-dropdown').parentElement.style.display = "none";
+            var modules = $.get("/Module/GetModulesByProjectId/" + projectId, function () {
+                if (modules.responseJSON.data.length != 0) {
+                    document.getElementById('module-id-dropdown').parentElement.style.display = "block";
+                    moduleChildList.append('<option value="0">--Select Module--</option>');
+                    for (var i = 0; i < modules.responseJSON.data.length; i++) {
+                        moduleChildList.append('<option value="' + modules.responseJSON.data[i].moduleId + '">' + modules.responseJSON.data[i].moduleName + '</option>');
+                    }
+                    document.getElementById('module-id-dropdown').value = moduleId;
+                }
+            })
+                .fail(function () {
+                    toastError("Error: Error occured while fetching modules.");
+                });
+        }
+
+        function SubModuleSelector(moduleId) {
+            var subModuleChildList = $('#submodule-id-dropdown');
+            subModuleChildList.empty();
+            document.getElementById('submodule-id-dropdown').parentElement.style.display = "none";
+            var subModules = $.get("/Module/GetSubModules/" + moduleId, function () {
+                if (subModules.responseJSON.data.length != 0) {
+                    document.getElementById('submodule-id-dropdown').parentElement.style.display = "block";
+                    subModuleChildList.append('<option value="0">--Select SubModule--</option>');
+                    for (var i = 0; i < subModules.responseJSON.data.length; i++) {
+                        subModuleChildList.append('<option value="' + subModules.responseJSON.data[i].moduleId + '">' + subModules.responseJSON.data[i].moduleName + '</option>');
+                    }
+                }
+            })
+                .fail(function (error) {
+                    toastError("Error: Error occured while fetching modules.");
+                });
+        }
+    </script>
+}

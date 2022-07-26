@@ -1,0 +1,46 @@
+﻿@model ChangeRequestManagment.Models.ViewModels.Module.ModuleViewModel
+
+@{
+    ViewData["Title"] = "Update";
+}
+<div class="card card-primary">
+    <div class="card-header">
+        <h4>Update a Module of @(Model.ParentModulelId != 0 ? ViewData["ParentModuleNameFromModuleController"] : ViewData["ProjectNameFromModule"])</h4>
+    </div>
+    <form method="post" asp-action="UpdateModule" asp-controller="Module">
+        <div class="card-body">
+            <div class="text-danger" asp-validation-summary="ModelOnly"></div>
+            <input type="hidden" value="@Model.ProjectId" asp-for="ProjectId">
+            <input type="hidden" value="@Model.ModuleId" asp-for="ModuleId">
+            <input type="hidden" value="@Model.ParentModulelId" asp-for="ParentModulelId">
+            <div class="form-group">
+                <label asp-for="ModuleName">Module Name*</label>
+                <input required class="form-control" asp-for="ModuleName" placeholder="Module Name" autofocus autocomplete="off">
+                <span asp-validation-for="ModuleName" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="card-footer">
+            <button type="submit" class="btn btn-primary mybtn-position">Update</button> &nbsp;
+            <button type="reset" class="btn btn-secondary mybtn-position set-pos" onclick="Cancel(@Model.ProjectId)">Cancel</button>
+        </div>
+    </form>
+</div>
+
+<style>
+    .mybtn-position {
+        float: right;
+    }
+
+    .set-pos {
+        margin-right: 1vh;
+    }
+</style>
+
+@section Scripts{
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        function Cancel(data) {
+            window.location = "/Module/Index/" + data;
+        }
+    </script>
+}

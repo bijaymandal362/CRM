@@ -1,0 +1,376 @@
+﻿@using static ChangeRequestManagment.Models.Enums.ListItemAndListItemCategoryEnum
+@model ChangeRequestManagment.Models.ViewModels.ChangeRequest.Common.ChangeRequestInfoCommonViewModel
+@inject ChangeRequestManagement.BusinessLayer.Services.Abstraction.IAccountService _accountService
+@inject ChangeRequestManagement.BusinessLayer.Services.Abstraction.ICommonService _commonSerivce
+
+@{
+	ViewData["Title"] = "Change Request of "+@Model.ChangeRequestInfoViewModel.ChangeRequestNumber;
+	Layout = "~/Views/Shared/_Layout.cshtml";
+
+	string monthHelper(int month)
+	{
+		switch(month)
+		{
+			case 1:
+				return "Jan";
+			case 2:
+				return "Feb";
+			case 3:
+				return "Mar";
+			case 4:
+				return "Apr";
+			case 5:
+				return "May";
+			case 6:
+				return "Jun";
+			case 7:
+				return "Jul";
+			case 8:
+				return "Aug";
+			case 9:
+				return "Sep";
+			case 10:
+				return "Oct";
+			case 11:
+				return "Nov";
+			case 12:
+				return "Dec";
+			default:
+				return "error";
+		}
+	}
+}
+
+<div class="container-fluid">
+	<!-- Content Header (Page header) -->
+	<section class="content-header">
+		<div class="container-fluid">
+			<div class="row mb-2">
+				<div class="col-sm-6">
+					<h1>Timeline</h1>
+				</div>
+			</div>
+		</div><!-- /.container-fluid -->
+	</section>
+
+	<!-- Main content -->
+	<section class="content">
+		<div class="container-fluid">
+
+			<!-- Timelime example  -->
+			<div class="row">
+				<div class="col-md-12">
+					<!-- The time line -->
+					<div class="timeline">
+						@{
+							int day=0;
+							int year=0;
+							int month=0;
+						}
+						@foreach (var item in Model.ChangeRequestStatusInfoViewViewModel)
+						{
+							if (day == 0 && year == 0 && month == 0)
+							{
+								day = item.InsertDate.Day;
+								year = item.InsertDate.Year;
+								month = item.InsertDate.Month;
+								<div class="time-label">
+									<span class="bg-red">@item.InsertDate.Day @monthHelper(@item.InsertDate.Month) @item.InsertDate.Year</span>
+								</div>
+							}
+							@if (item.InsertDate.Day == day)
+							{
+								@if (item.InsertDate.Month == month)
+								{
+									@if (item.InsertDate.Year == year)
+									{
+
+									}
+									else
+									{
+										<div class="time-label">
+											<span class="bg-red">@item.InsertDate.Day @monthHelper(@item.InsertDate.Month) @item.InsertDate.Year</span>
+										</div>
+										day = @item.InsertDate.Day;
+										year = @item.InsertDate.Year;
+										month = @item.InsertDate.Month;
+									}
+								}
+								else
+								{
+									<div class="time-label">
+										<span class="bg-red">@item.InsertDate.Day @monthHelper(@item.InsertDate.Month) @item.InsertDate.Year</span>
+									</div>
+									day = @item.InsertDate.Day;
+									year = @item.InsertDate.Year;
+									month = @item.InsertDate.Month;
+								}
+							}
+							else
+							{
+								<div class="time-label">
+									<span class="bg-red">@item.InsertDate.Day @monthHelper(@item.InsertDate.Month) @item.InsertDate.Year</span>
+								</div>
+								day = @item.InsertDate.Day;
+								year = @item.InsertDate.Year;
+								month = @item.InsertDate.Month;
+							}
+							<div>
+								@{var myStyle = "";}
+							@if(item.ChangeRequestStatusListItemId == (int)ChangeRequestStatusEnum.Pending)
+							{
+									<i class="fas fa-clock" style="color:yellow;"></i>
+									myStyle = "border-left:4px solid yellow !important;";
+								}
+							@if(item.ChangeRequestStatusListItemId == (int)ChangeRequestStatusEnum.Approved)
+							{
+								<i class="fas fa-check-circle" style="color:#2a7d2a;"></i>
+								myStyle = "border-left:4px solid #2a7d2a !important;";
+							}
+							@if(item.ChangeRequestStatusListItemId == (int)ChangeRequestStatusEnum.Development)
+							{
+								<i class="fas fa-cogs" style="color:gray;"></i>
+								myStyle = "border-left:4px solid gray !important;";
+							}
+							@if(item.ChangeRequestStatusListItemId == (int)ChangeRequestStatusEnum.Testing)
+							{
+								<i class="fas fa-tasks" style="color:blue;"></i>
+								myStyle = "border-left:4px solid blue !important;";
+							}
+							@if(item.ChangeRequestStatusListItemId == (int)ChangeRequestStatusEnum.Staging)
+							{
+								<i class="fas fa-sort-amount-up-alt" style="color:brown;"></i>
+								myStyle = "border-left:4px solid brown !important;";
+							}
+							@if(item.ChangeRequestStatusListItemId == (int)ChangeRequestStatusEnum.Delivered)
+							{
+								<i class="fas fa-truck-loading" style="color:#779bca;"></i>
+								myStyle = "border-left:4px solid #779bca !important;";
+							}
+							@{var personResult = _accountService.FindPersonByIdAsync(item.InsertPersonId).Result;}
+							@{var changeRequestType = _commonSerivce.GetListItemByIdAsync(item.ChangeRequestStatusListItemId).Result;}
+							<div class="timeline-item" style ="@myStyle">
+								@{var timelineHeaderHour = "";}
+								@if (item.InsertDate.Hour > 12)
+								{
+										
+									timelineHeaderHour  = item.InsertDate.Hour - 12+
+													":"+item.InsertDate.Minute+" pm";
+								}
+								else if (item.InsertDate.Hour == 12)
+								{
+										
+									timelineHeaderHour  = item.InsertDate.Hour+
+													":"+item.InsertDate.Minute+" pm";
+								}
+								else if (item.InsertDate.Hour < 12)
+								{
+									timelineHeaderHour  = item.InsertDate.Hour+
+												":"+item.InsertDate.Minute+" am";
+								}
+							<span class="time"><i class="fas fa-clock"></i> @timelineHeaderHour</span>
+							<h3 class="timeline-header">@personResult.FirstName @personResult.LastName has updated a change request.</h3>
+							<div class="timeline-body">
+								@if(@item.ChangeRequestStatusListItemId == (int)ChangeRequestStatusEnum.Pending)
+										{
+											<b>@Model.ChangeRequestInfoViewModel.Title</b>
+											<p>@Model.ChangeRequestInfoViewModel.Description</p>
+											<p>
+												Deadline: @Model.ChangeRequestInfoViewModel.DeadlineDate.Day
+															@monthHelper(Model.ChangeRequestInfoViewModel.DeadlineDate.Month)
+															@Model.ChangeRequestInfoViewModel.DeadlineDate.Year
+															at 
+															@{var hour = "";}
+												@if (Model.ChangeRequestInfoViewModel.DeadlineDate.Hour > 12)
+												{
+													hour  = Model.ChangeRequestInfoViewModel.DeadlineDate.Hour - 12+
+													":"+Model.ChangeRequestInfoViewModel.DeadlineDate.Minute+" pm";												
+												}
+												else if (item.InsertDate.Hour == 12)
+												{
+										
+													hour = item.InsertDate.Hour+
+																	":"+item.InsertDate.Minute+" pm";
+												}
+												else if (item.InsertDate.Hour == 00)
+												{
+										
+													hour = "12:"+item.InsertDate.Minute+" am";
+												}
+												else if (item.InsertDate.Hour < 12)
+												{
+													hour = Model.ChangeRequestInfoViewModel.DeadlineDate.Hour+
+													":"+Model.ChangeRequestInfoViewModel.DeadlineDate.Minute+" am";	
+												}
+												@hour
+											</p>
+										}
+										<p>Change Request Type: @changeRequestType.ListItemSystemName</p>
+									@if(item.ChangeRequestStatusListItemId == (int)ChangeRequestStatusEnum.Pending)
+										{
+											<p>Priority: @Model.ChangeRequestInfoViewModel.ListItemPriorityName</p>
+											foreach (var doc in Model.ChangeRequestDocumentInfoViewModel
+											.Where(x=>x.ChangeRequestStatusId==item.ChangeRequestStatusId).ToList())
+											{
+												Console.WriteLine($"{doc.ChangeRequestStatusId} {item.ChangeRequestStatusId}");
+												var extn = System.IO.Path.GetExtension(doc.DocumentPath).ToLower();
+												@if(extn == ".png" ||
+													extn ==".jpg" ||
+													extn == ".jepg")
+												{
+													<div style="width:100%;">
+													<a class="file-anchor" asp-action="Download" 
+													asp-controller="Document" 
+													asp-route-documentPath="@doc.DocumentPath">
+														<img src="~/CRMFiles/@doc.DocumentPath" style="width:10vh; margin-bottom:4px;">
+														@{ var imgPath = doc.DocumentPath.Substring(0,16)+"...."; }
+														@imgPath
+													</a>
+													</div>
+												}
+												else 
+												{
+													<div style="width:100%;">
+													<a class="file-anchor" asp-action="Download" 
+													asp-controller="Document" 
+													asp-route-documentPath="@doc.DocumentPath">
+														@if (extn == ".pdf")
+														{
+															<img src="~/Icons/icon-pdf.png" style="width:10vh;">
+														}
+														else if(extn == ".xls" || extn == ".xlsx")
+														{
+															<img src="~/Icons/icon-xls.png" style="width:10vh;">
+														}
+														else if(extn == ".doc" || extn == ".docx")
+														{
+															<img src="~/Icons/Icon-doc.png" style="width:10vh;">
+														}
+														else if(extn == ".txt")
+														{
+															<img src="~/Icons/icon-txt.png" style="width:10vh;">
+														}
+														else if(extn == ".log")
+														{
+															<img src="~/Icons/icon-log.png" style="width:10vh;">
+														}
+														else if(extn == ".csv")
+														{
+															<img src="~/Icons/icon-csv.png" style="width:10vh;">
+														}
+														@{ var docPath = doc.DocumentPath.Substring(0,16)+"...."; }
+														@docPath
+													</a>
+													</div>
+												}
+											}
+										}
+										@if (item.ChangeRequestStatusListItemId == (int)ChangeRequestStatusEnum.Delivered)
+										{
+											var deliveredDate = new DateTime
+											(item.InsertDate.Year,
+											item.InsertDate.Month,
+											item.InsertDate.Day,
+											item.InsertDate.Hour,
+											item.InsertDate.Minute,
+											0
+											);
+											var deadlineDate = new DateTime
+											(Model.ChangeRequestInfoViewModel.DeadlineDate.Year,
+											Model.ChangeRequestInfoViewModel.DeadlineDate.Month,
+											Model.ChangeRequestInfoViewModel.DeadlineDate.Day,
+											Model.ChangeRequestInfoViewModel.DeadlineDate.Hour,
+											Model.ChangeRequestInfoViewModel.DeadlineDate.Minute,
+											0
+											);
+											var styleForDeadlineMeet = "";
+											if (DateTime.Compare(deadlineDate, deliveredDate) >= 0)
+											{
+												<P>Projected was successfully delevered within the deadline.</P>
+												styleForDeadlineMeet = "color:white;";
+											}
+											else
+											{
+												<P>Projected was not delevered within the deadline.</P>
+												styleForDeadlineMeet = "color:red;";
+											}
+											<P style="@styleForDeadlineMeet">
+													<b>Deadline:</b> @Model.ChangeRequestInfoViewModel.DeadlineDate.Day
+													@monthHelper(Model.ChangeRequestInfoViewModel.DeadlineDate.Month)
+													@Model.ChangeRequestInfoViewModel.DeadlineDate.Year
+													at 
+													@{ var hour2 = "";}
+													@if (Model.ChangeRequestInfoViewModel.DeadlineDate.Hour > 12)
+													{
+														hour2 = Model.ChangeRequestInfoViewModel.DeadlineDate.Hour - 12 +
+														":" + Model.ChangeRequestInfoViewModel.DeadlineDate.Minute + " pm";
+													}
+													else if (Model.ChangeRequestInfoViewModel.DeadlineDate.Hour == 12)
+													{
+														hour2 = Model.ChangeRequestInfoViewModel.DeadlineDate.Hour +
+														":" + Model.ChangeRequestInfoViewModel.DeadlineDate.Minute + " pm";
+													}
+													else if(Model.ChangeRequestInfoViewModel.DeadlineDate.Hour < 12)
+													{
+														hour2 = Model.ChangeRequestInfoViewModel.DeadlineDate.Hour +
+														":" + Model.ChangeRequestInfoViewModel.DeadlineDate.Minute + " am";
+													}
+													else if(Model.ChangeRequestInfoViewModel.DeadlineDate.Hour == 00)
+													{
+														hour2 = "12:" + Model.ChangeRequestInfoViewModel.DeadlineDate.Minute + " am";
+													}
+													@hour2
+												</P>
+												<p style="@styleForDeadlineMeet">
+													<b>Delivered on:</b> @item.InsertDate.Day
+													@monthHelper(@item.InsertDate.Month)
+													@item.InsertDate.Year
+													at 
+													@{ var hour3 = "";}
+													@if (item.InsertDate.Hour > 12)
+													{
+														hour3 = item.InsertDate.Hour - 12 +
+														":" + @item.InsertDate.Minute + " pm";
+													}
+													else if (item.InsertDate.Hour== 12)
+													{
+														hour3 = item.InsertDate.Hour+
+														":" + @item.InsertDate.Minute + " pm";
+													}
+													else if(item.InsertDate.Hour < 12)
+													{
+														hour3 = item.InsertDate.Hour +
+														":" + @item.InsertDate.Minute + " am";
+													}
+													else if(item.InsertDate.Hour == 00)
+													{
+														hour3 = "12:" + @item.InsertDate.Minute + " am";
+													}
+													@hour3
+												</P>
+										}
+										@{var comment = item.Comment!=null?"Comment: "+item.Comment:"";}
+										<p>@comment</p>
+							</div>
+						</div>
+									
+						</div>
+						
+						}
+					</div>
+					<!-- /.col -->
+				</div>
+			</div>
+			<!-- /.timeline -->
+		</div>
+	</section>
+	<!-- /.content -->
+</div>
+<!-- /.content-wrapper -->
+
+<style>
+	.file-anchor
+	{
+		display: inline;
+	}
+</style>

@@ -1,0 +1,95 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    ViewData["Title"] = "Details of "+User.FindFirstValue("LastName");
+}
+
+<!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-md-12">
+
+            <!-- Profile Image -->
+            <div class="card card-primary card-outline">
+              <div class="card-body box-profile">
+                <div class="text-center">
+                  <img class="profile-user-img img-fluid img-circle"
+                       src="~/Icons/profile-logo.png"
+                       alt="User profile picture">
+                </div>
+
+                <h3 class="profile-username text-center">@User.FindFirstValue("FirstName") @User.FindFirstValue("LastName")</h3>
+                <br />
+                <ul class="list-group list-group-unbordered mb-3">
+                  <li class="list-group-item">
+                    <div class="head-item-holder">
+                        <div class="item-left" style="height:100%; float:left;">
+                            <b>Email Address:</b>
+						</div>
+                        <div class="item-right">
+                            <p class="item-info">@User.FindFirstValue(ClaimTypes.Email)</p>
+						</div>
+					</div>
+                  </li>
+                    @if (User.FindFirstValue(ClaimTypes.Role) != "ADMIN")
+                    {
+                        <li class="list-group-item">
+                            <div class="head-item-holder">
+                                <div class="item-left" style="height:100%; float:left;">
+                                    <b>Company:</b>
+						        </div>
+                                <div class="item-right">
+                                    <p class="item-info">@ViewData["CompanyName"]</p>
+						        </div>
+					        </div>
+                        </li>    
+                    }
+                  <li class="list-group-item">
+                        <div class="head-item-holder">
+                            <div class="item-left" style="height:100%; float:left;">
+                                <b>Role:</b>
+						    </div>
+                            <div class="item-right">
+                                <p class="item-info">@User.FindFirstValue(ClaimTypes.Role)</p>
+						    </div>
+					    </div>
+                  </li>
+                </ul>
+              </div>
+              <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+          </div>
+          <!-- /.col -->
+        </div>
+        <!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+    <style>
+        .head-item-holder
+        {
+            width:100%;
+            height:100%;
+        }
+        .item-left
+        {
+            height:100%;
+            float:left;
+        }
+        .item-right
+        {
+            height:100%;
+            float:right;
+        }
+        .item-info
+        {
+            text-align:right;
+        }
+        .list-group-item:first-child
+        {
+            border-top:none !important;
+        }
+	</style>

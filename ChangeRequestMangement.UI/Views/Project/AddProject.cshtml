@@ -1,0 +1,128 @@
+﻿@model ChangeRequestManagment.Models.ViewModels.Project.ProjectViewModel
+
+@{
+    ViewData["Title"] = "Add";
+}
+
+
+<div class="card card-primary">
+    <div class="card-header">
+        <h4>Add Project</h4>
+    </div>
+
+    <form asp-action="AddProject" method="post" id="projectForm">
+        @Html.AntiForgeryToken()
+        @{
+            if (ViewData.ModelState.IsValid == false)
+            {
+                <div class="callout callout-danger">
+                    <div asp-validation-summary="All" class="text-danger"></div>
+                </div>
+
+            }
+        }
+        <div class="card-body">
+            <div class="form-group">
+                <label asp-for="CompanyId" class="control-label">Company Name</label>
+                <select asp-for="CompanyId" class="form-control select2" style="width:100%;" asp-items="@(new SelectList(@ViewBag.CompanyDropDown,"CompanyId","CompanyName"))" autofocus></select>
+                <span asp-validation-for="CompanyId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ProjectName" class="control-label">Project Name</label>
+                <input asp-for="ProjectName" class="form-control" placeholder="Project Name" />
+                <span asp-validation-for="ProjectName" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="card-footer">
+            <button type="submit" class="btn btn-primary mybtn-position">Submit</button> &nbsp;
+            <button type="reset" class="btn btn-secondary mybtn-position set-pos" onclick ="window.location ='/Project/Index'">Cancel</button>
+        </div>
+    </form>
+</div>
+
+<style>
+    .mybtn-position
+    {
+        float:right;
+    }
+
+    .set-pos{margin-right:1vh;}
+
+    #select2-CompanyId-container
+    {
+        position: absolute;
+        top: 50%;
+        transform: translate(0%, -40%);
+        color: white;
+    }
+
+    .select2-selection
+    {
+        background: #343a40 !important; 
+    }
+
+    .select2-container--default, .select2-search--dropdown, .select2-search__field {
+        border: 1px solid #aaa;
+        border-radius: 4px;
+    }
+
+    .select2-container--default .select2-results__option--highlighted[aria-selected], .select2-container--default .select2-results__option--highlighted[aria-selected]:hover {
+        background-color: #3f6791 !important;
+        color: #fff !important;
+    }
+
+    .select2-container--default .select2-results__option--selected {
+    background-color: #343a40;
+}
+
+</style>
+
+@section Scripts{
+
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+        $('.select2').select2();
+        $(document).ready(function() {  
+            $('.select2').select2('open');
+        });
+
+        $(document).on('select2:open', () => {
+            document.querySelector('.select2-search__field').focus();
+        });
+
+
+        $(function () {
+            $('#projectForm').validate({
+                rules: {
+                    ProjectName: {
+                        required: true
+                    },
+                    CompanyId: {
+                        required: true
+
+                    },
+                },
+                messages: {
+                    ProjectName: {
+                        required: "Project Name is required"
+                    },
+                    CompanyId: {
+                        required: "Company Name is required"
+                    }
+                },
+                errorElement: 'span',
+                errorPlacement: function (error, element) {
+                    error.addClass('invalid-feedback');
+                    element.closest('.form-group').append(error);
+                },
+                highlight: function (element, errorClass, validClass) {
+                    $(element).addClass('is-invalid');
+                },
+                unhighlight: function (element, errorClass, validClass) {
+                    $(element).removeClass('is-invalid');
+                }
+            });
+        });
+
+    </script>
+}

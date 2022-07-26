@@ -1,0 +1,45 @@
+﻿@model ChangeRequestManagment.Models.ViewModels.Module.ModuleViewModel
+@{
+    ViewData["Title"] = "Add";
+}
+<div class="card card-primary">
+    <div class="card-header">
+        <h4>Add a Module to @ViewData["ProjectNameFromModule"]</h4>
+    </div>
+    <form method="post" asp-action="AddModule" asp-controller="Module">
+        <div class="card-body">
+            <input type="hidden" asp-for="ProjectId" value="@ViewData["ProjectIdFromModuleController"]" />
+            <div class="text-danger" asp-validation-summary="ModelOnly"></div>
+            <div class="form-group">
+                <label asp-for="ModuleName">Module Name*</label>
+                <input required class="form-control" asp-for="ModuleName" placeholder="Module Name" autofocus autocomplete="off">
+                <span asp-validation-for="ModuleName" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="card-footer">
+            <button type="submit" class="btn btn-primary mybtn-position">Submit</button> &nbsp;
+            <button type="reset" class="btn btn-secondary mybtn-position set-pos" onclick="Cancel(@ViewData["ProjectIdFromModuleController"])">Cancel</button>
+        </div>
+    </form>
+</div>
+
+<style>
+    .mybtn-position {
+        float: right;
+    }
+
+    .set-pos {
+        margin-right: 1vh;
+    }
+</style>
+
+@section Scripts{
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        function Cancel(data) {
+            var base = location.origin
+
+            window.location.assign(base + '/Module/Index/' + data)
+        }
+    </script>
+}

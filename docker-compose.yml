@@ -1,0 +1,39 @@
+version: '3.4'
+
+services:
+  changerequestmangement.ui:
+    image: changerequestmangement.ui
+    build:
+      context: .
+      dockerfile: ChangeRequestMangement.UI/Dockerfile
+    environment:
+    - ASPNETCORE_ENVIRONMENT=Development
+    ports:
+    - 8888:80
+    depends_on:
+    - postgres
+    networks:
+    - postgres
+
+  postgres:
+    container_name: postgres
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: ChangeRequestManagement
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Admin@123
+      PGDATA: /data/postgres
+    volumes:
+      - postgres:/data/postgres
+    ports:
+      - "5432:5432"
+    networks:
+      - postgres
+    restart: unless-stopped
+
+networks:
+    postgres:
+      driver: bridge
+
+volumes:
+    postgres:

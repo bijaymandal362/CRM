@@ -1,0 +1,42 @@
+﻿@model ChangeRequestManagment.Models.ViewModels.Company.CompanyViewModel
+
+@{
+    ViewData["Title"] = "Add";
+}
+
+<div class="col-md-12">
+    <div class="card card-primary">
+        <div class="card-header">
+            <h4>Add Company</h4>
+        </div>
+
+        @Html.AntiForgeryToken()
+        <form method="post" asp-action="AddCompany" asp-controller="Company">
+            <div class="card-body">
+                <div class="text-danger" asp-validation-summary="ModelOnly"></div>
+                <div class="form-group">
+                    <label asp-for="CompanyName">Company Name*</label>
+                    <input required class="form-control" asp-for="CompanyName" placeholder="Company Name" autofocus autocomplete="off">
+                    <span asp-validation-for="CompanyName" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="card-footer">
+                <button type="submit" class="btn btn-primary mybtn-position">Submit</button> &nbsp;
+                <button type="reset" class="btn btn-secondary mybtn-position set-pos" onclick ="window.location ='/Company/Index'">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .mybtn-position {
+        float: right;
+    }
+
+    .set-pos {
+        margin-right: 1vh;
+    }
+</style>
+@section Scripts{
+    <partial name="_ValidationScriptsPartial" />
+}
